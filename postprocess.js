@@ -7,8 +7,6 @@ const {
     fade,
     createGIF
  } = require('./utils');
-const { createGIF } = require('./gif');
-
 
 function run() {
     

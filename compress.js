@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const parser = require('args-parser');
 
-const { getDuration, createGIF } = require('./utils');
+const { compress } = require('./utils');
 
 function run() {
 
@@ -24,9 +24,7 @@ function run() {
     }
 
     for (let filePath of filePaths) {
-        let start = args.start ?? 0.0;
-        let duration = args.duration ?? getDuration(filePath);
-        createGIF(filePath, start, duration, args.scale);
+        compress(filePath, args.crf, args.vcodec);
     }
 }
 

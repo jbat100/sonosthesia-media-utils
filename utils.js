@@ -115,6 +115,35 @@ function delayAudio(filePath, seconds) {
     return path.join(directory, outputFileName);
 }
 
+function compress(filePath, crf, vcodec) {
+
+    if (!crf)
+    {
+        crf = 28;
+    }
+    if (!vcodec)
+    {
+        vcodec = 'libx264';
+        // can be libx265 but quicktime doesn't like it as well as a few others
+    }
+
+    const directory = path.dirname(filePath);
+    const fileName = path.basename(filePath);
+    const extension = path.extname(filePath);
+    const outputFileName = fileName.replace(extension, '') + '_' + vcodec + '_' + crf + extension;
+    
+    const command = `ffmpeg -i "${fileName}" -vcodec ${vcodec} -crf ${crf} "${outputFileName}"`;
+
+    // https://unix.stackexchange.com/questions/28803/how-can-i-reduce-a-videos-size-with-ffmpeg
+    // ffmpeg -i input.mp4 -vcodec libx265 -crf 28 output.mp4
+
+    console.log(command);
+
+    execSync(command, { cwd: directory, stdio: 'inherit' });
+
+    return path.join(directory, outputFileName);
+}
+
 
 module.exports = {
     fade,
@@ -122,5 +151,6 @@ module.exports = {
     truncate,
     delayAudio,
     getDuration,
-    createGIF
+    createGIF,
+    compress
 }
