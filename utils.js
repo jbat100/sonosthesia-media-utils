@@ -1,6 +1,23 @@
 const path = require('path');
 const execSync = require('child_process').execSync;
 
+function extractSeconds(input) {
+        // Check if input is already a number (or a string representing a number)
+        if (!isNaN(input)) {
+            return parseInt(input, 10);
+        }
+        // Otherwise, we assume the format is <minutes>:<seconds>
+        const parts = input.split(':');
+        if (parts.length === 2) {
+            const minutes = parseInt(parts[0], 10);
+            const seconds = parseInt(parts[1], 10);
+            return minutes * 60 + seconds;
+        }
+    
+        // If the input format is incorrect, return an error or zero
+        throw new Error('Invalid input format. Please provide a number or a string in <minutes>:<seconds> format.'); 
+}
+
 function getDuration(filePath) {
     const directory = path.dirname(filePath);
     const fileName = path.basename(filePath);
@@ -115,6 +132,24 @@ function delayAudio(filePath, seconds) {
     return path.join(directory, outputFileName);
 }
 
+function crop(filePath, width, height) {
+
+    const directory = path.dirname(filePath);
+    const fileName = path.basename(filePath);
+    const extension = path.extname(filePath);
+    const outputFileName = fileName.replace(extension, '') + `_cropped_${width}_${height}` + extension;
+    
+    const command = `ffmpeg -i "${fileName}" -vf "crop=${width}:${height}" "${outputFileName}"`;
+
+    // ffmpeg -i "Movie_008.mp4" -itsoffset 0.12 -i "Movie_008.mp4" -map 0:v -map 1:a -c copy "Movie_008_delayed.mp4"
+
+    console.log(command);
+
+    execSync(command, { cwd: directory, stdio: 'inherit' });
+
+    return path.join(directory, outputFileName);
+}
+
 function compress(filePath, crf, vcodec) {
 
     if (!crf)
@@ -146,11 +181,13 @@ function compress(filePath, crf, vcodec) {
 
 
 module.exports = {
+    extractSeconds,
     fade,
     extractClip,
     truncate,
     delayAudio,
     getDuration,
     createGIF,
-    compress
+    compress,
+    crop
 }

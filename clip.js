@@ -1,12 +1,20 @@
 const parser = require('args-parser');
 const chalk = require('chalk');
-const { extractClip, fade } = require('./utils');
+const { extractClip, fade, extractSeconds } = require('./utils');
 
 function run() {
     let args = parser(process.argv);
     let filePath = args.file;
-    if (args.start && args.duration) {
-        filePath = extractClip(filePath, args.start, args.duration);
+    let start = extractSeconds(args.start);
+    let duration = null;
+    if (args.duration) {
+        duration = extractSeconds(args.duration);
+    } else if (args.end) {
+        let end = extractSeconds(args.end);
+        duration = end - start;
+    }
+    if (start && duration) {
+        filePath = extractClip(filePath, start, duration);
         console.log(chalk.gray(`Clip extraction result written to ${filePath}`));
         if (args.fade) {
             filePath = fade(filePath, args.fade);
