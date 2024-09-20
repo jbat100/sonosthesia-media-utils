@@ -73,7 +73,7 @@ async function resizeImagesInFolder(folderPath, size = { width: 256, height: 256
 async function resizeIconsFolder(folderPath, size = 256) {
     try {
       const files = await fs.readdir(folderPath);
-      const outputFolderPath = `${folderPath}_${size}px`;
+      const outputFolderPath = path.join(folderPath, 'Resized', `${path.basename(folderPath)}_${size}px`);
       await createDirectory(outputFolderPath);
       const resizePromises = files.map(async (file) => {
         if (path.extname(file).toLowerCase() === '.png') {

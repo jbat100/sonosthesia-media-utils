@@ -13,7 +13,7 @@ function run() {
         let end = extractSeconds(args.end);
         duration = end - start;
     }
-    if (start && duration) {
+    if (duration) {
         filePath = extractClip(filePath, start, duration);
         console.log(chalk.gray(`Clip extraction result written to ${filePath}`));
         if (args.fade) {
