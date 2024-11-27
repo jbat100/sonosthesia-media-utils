@@ -1,4 +1,5 @@
 const path = require('path');
+const chalk = require('chalk');
 const execSync = require('child_process').execSync;
 
 function extractSeconds(input) {
@@ -141,13 +142,28 @@ function crop(filePath, width, height) {
     
     const command = `ffmpeg -i "${fileName}" -vf "crop=${width}:${height}" "${outputFileName}"`;
 
-    // ffmpeg -i "Movie_008.mp4" -itsoffset 0.12 -i "Movie_008.mp4" -map 0:v -map 1:a -c copy "Movie_008_delayed.mp4"
-
     console.log(command);
 
     execSync(command, { cwd: directory, stdio: 'inherit' });
 
     return path.join(directory, outputFileName);
+}
+
+function cropAdvanced(filePath, width, height, x, y) {
+
+    // typical 4K capture is 3840 x 2160
+
+    const directory = path.dirname(filePath);
+    const fileName = path.basename(filePath);
+    const extension = path.extname(filePath);
+    const outputFileName = fileName.replace(extension, '') + `_cropped_${width}_${height}_${x}_${y}` + extension;
+    
+    const command = `ffmpeg -i "${fileName}" -vf "crop=w=${width}:h=${height}:x=${x}:y=${y}" "${outputFileName}"`;
+    console.log(chalk.blue(command));
+    execSync(command, { cwd: directory, stdio: 'inherit' });
+
+    return path.join(directory, outputFileName);
+
 }
 
 function compress(filePath, crf, vcodec) {
@@ -189,5 +205,6 @@ module.exports = {
     getDuration,
     createGIF,
     compress,
-    crop
+    crop,
+    cropAdvanced
 }
